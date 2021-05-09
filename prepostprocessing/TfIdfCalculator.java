@@ -39,28 +39,33 @@ public class TfIdfCalculator {
 			List docLengthList = new ArrayList();
 			
 			String instance=null;
-			
+
 			while((instance = br1.readLine()) != null) {
-				
-				String [] labels = instance.split(","); 
+
+				String [] labels = instance.split(",");
 				int numLabels = labels.length;
 				int tempSpaceIndex = 0, startIndex = 0;
 				/*for(int i = 0; i < numLabels; i++){
 					tempSpaceIndex = instance.indexOf(" ", startIndex);
 					startIndex = tempSpaceIndex + 1;
 				}*/
-				
+
 				startIndex = instance.indexOf(" ", 0);  //assuming that labels do not have spaces
-				
+
 				int labelEndIndex = startIndex;
-				
+
+				if(startIndex == -1){
+					System.out.println("skipping instance with no features");
+					continue;
+				}
+
 				String labelToRootPath = instance.substring(0, labelEndIndex);
 //				System.out.println(numberOfDocs + " "+ labelToRootPath);
-				
+
 				String vector = instance.substring(labelEndIndex+1);
-				
-				StringTokenizer st1 = new StringTokenizer (vector, " "); 
-				
+
+				StringTokenizer st1 = new StringTokenizer (vector, " ");
+
 				while(st1.hasMoreTokens()){
 					String[] feature = st1.nextToken().split(":");                  //split the feature key:value
 					if(vocabMap.containsKey(feature[0])){
@@ -74,32 +79,36 @@ public class TfIdfCalculator {
 				}
 				numberOfDocs++;
 			}
-			
+
 			// now that we have the vocab info, read the input file in LIBSVM format once again
 			// to do the real processing for tf idf per training data instance
-					
+
 			fr2 = new FileReader(inputFile);
 			BufferedReader br2 = new BufferedReader(fr2);
 			out = new PrintWriter(new BufferedWriter(new FileWriter(outputFile,true)));
-			
+
 			String trainingInstance=null;
 			int docIndex = 0;
 			while((instance = br2.readLine()) != null) {
-				
 				StringBuffer outputInstance = new StringBuffer("");
-				
-				String [] labels = instance.split(","); 
+
+				String [] labels = instance.split(",");
 				int numLabels = labels.length;
 				int tempSpaceIndex = 0, startIndex = 0;
 				/*for(int i = 0; i < numLabels; i++){
 					tempSpaceIndex = instance.indexOf(" ", startIndex);
 					startIndex = tempSpaceIndex + 1;
 				}*/
-				
+
 				startIndex = instance.indexOf(" ", 0);  //assuming that labels do not have spaces
-				
+
+				if(startIndex == -1){
+					System.out.println("skipping instance with no features");
+					continue;
+				}
+
 				int labelEndIndex = startIndex;
-				
+
 				String labelToRootPath = instance.substring(0, labelEndIndex);
 				String vector = instance.substring(labelEndIndex+1);
 				
